@@ -1,4 +1,10 @@
 var map, marker, latitutde, longitude;
+var satelliteImages = [];
+
+function satelliteImage(coords, url) {
+    this.coords = coords;
+    this.url = url;
+}
 
 function initMap() {
     
@@ -13,7 +19,7 @@ function initMap() {
         { name: "Berlin", lat: 52.5200, long: 13.4050 },
         { name: "Cape Town", lat: -33.9249, long: 18.4241 },
         { name: "Dallas", lat: 32.7767, long: -96.7970 },
-        { name: "Chicago", lat: 41.8781, long: -87.6298 },
+        //{ name: "Chicago", lat: 41.8781, long: -87.6298 },
         { name: "Dallas", lat: 32.7767, long: -96.7970 },
         { name: "Anchorage", lat: 61.2181, long: -149.9003 },
         { name: "Buenos Aires", lat: -34.6037, long: -58.3816 },
@@ -50,16 +56,25 @@ function initMap() {
         $.get({
             url: apiUrl,
             success: function(location){
-                console.log(location);
                 marker = new google.maps.Marker({
                     position: { lat: latitutde, lng: longitude },
                     map: map
                 });
+                var upperLimit = longitude + 14;
+                var lowerLimit = longitude - 14;
+                var imgTag = "";
+                satelliteImages.forEach(function(img){
+                    if (img.coords.lon > lowerLimit && img.coords.lon < upperLimit) {
+                        imgTag = "<span onclick='window.open(\"" + img.url + "\")'><img class='sat-img' src='" + img.url + "'></span>";
+                    }
+                })
                 var infowindow = new google.maps.InfoWindow({
+                    pixelOffset: new google.maps.Size(0, 220),
                     content: "<h1>" + location.name + ", " + location.sys.country + "</h1>" +
                                 "<img src='http://www.openweathermap.org/img/w/" + location.weather[0].icon + ".png' />" +
                                 "<p>" + location.main.temp + "&deg;</p>" +
-                                "<p>" + location.weather[0].description + "</p>"
+                                // "<p>" + location.weather[0].description + "</p>" +
+                                imgTag
                 });
                 infowindow.open(map, marker);
             },
@@ -71,21 +86,26 @@ function initMap() {
 
     $.get({
         url: "https://epic.gsfc.nasa.gov/api/natural?api_key=ICpor4lpkRKy36vouzXvpEO6ODsx6ZqoMYkF5CXl",
-        success: function(data){
-            console.log(data);
+        success: function(images){
+            images.forEach(function(img){
+                var dateTime = img.date.split(" ");
+                var date = dateTime[0].split("-");
+                var url = "https://epic.gsfc.nasa.gov/archive/natural/" + date[0] + "/" + date[1] + "/" + date[2] + "/png/" + img.image + ".png";
+                var coords = img.centroid_coordinates;
+                satelliteImages.push(new satelliteImage(coords, url));
+                console.log(coords, url);
+            })
         },
         error: function(data){
             console.log(data);
         }
     })
-    //var nasa = JSON.parse("https://epic.gsfc.nasa.gov/api/enhanced?api_key=ICpor4lpkRKy36vouzXvpEO6ODsx6ZqoMYkF5CXl");
-    //console.log(nasa);
 
     cities.forEach(function(city){
         $.get({
             url: "http://api.openweathermap.org/data/2.5/weather?lat=" + city.lat + "&lon=" + city.long + "&units=imperial&APPID=ca6715e3bc0a5934ba9c218476a1374f",
             success: function(location){
-                console.log(location);
+                // console.log(location);
                 marker = new google.maps.Marker({
                     position: { lat: location.coord.lat-3, lng: location.coord.lon },
                     map: map,
