@@ -1,9 +1,10 @@
 var map, marker, latitutde, longitude;
 var satelliteImages = [];
 
-function satelliteImage(coords, url) {
+function satelliteImage(coords, url, id) {
     this.coords = coords;
     this.url = url;
+    this.id = id;
 }
 
 function initMap() {
@@ -14,12 +15,10 @@ function initMap() {
     var cities = [
         { name: "Sydney", lat: -33.8688, long: 151.2093 },
         { name: "Sacramento", lat: 38.5816, long: -121.4944 },
-        // { name: "Los Angeles", lat: 34.0522, long: -118.2437 },
         { name: "New York", lat: 40.7128, long: -74.0060 },
         { name: "Berlin", lat: 52.5200, long: 13.4050 },
         { name: "Cape Town", lat: -33.9249, long: 18.4241 },
         { name: "Dallas", lat: 32.7767, long: -96.7970 },
-        //{ name: "Chicago", lat: 41.8781, long: -87.6298 },
         { name: "Dallas", lat: 32.7767, long: -96.7970 },
         { name: "Anchorage", lat: 61.2181, long: -149.9003 },
         { name: "Buenos Aires", lat: -34.6037, long: -58.3816 },
@@ -36,8 +35,9 @@ function initMap() {
         { name: "Fortaleza", lat: -3.7319, long: -38.5267 },
         { name: "Singapore", lat: 1.3521, long: 103.8198 },
         { name: "Hay River", lat: 60.8162, long: -115.7854 },
-        { name: "Pangnirtung", lat: 66.1466, long: -65.7012 }
-
+        { name: "Pangnirtung", lat: 66.1466, long: -65.7012 },
+        { name: "Beijing", lat: 39.9042, long: 116.4074 },
+        { name: "Honolulu", lat: 21.3069, long: -157.8583 }
     ]
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -65,7 +65,7 @@ function initMap() {
                 var imgTag = "";
                 satelliteImages.forEach(function(img){
                     if (img.coords.lon > lowerLimit && img.coords.lon < upperLimit) {
-                        imgTag = "<a href='" + img.url + "' data-lightbox='image'><img class='sat-img' src='" + img.url + "'></a>";
+                        imgTag = "<a href='" + $("#" + img.id + "img").attr("src") + "' data-lightbox='image'>" + $("#" + img.id).html() + "</a>";
                     }
                 })
                 var infowindow = new google.maps.InfoWindow({
@@ -92,8 +92,10 @@ function initMap() {
                 var date = dateTime[0].split("-");
                 var url = "https://epic.gsfc.nasa.gov/archive/natural/" + date[0] + "/" + date[1] + "/" + date[2] + "/png/" + img.image + ".png";
                 var coords = img.centroid_coordinates;
-                satelliteImages.push(new satelliteImage(coords, url));
-                console.log(coords, url);
+                var id = img.identifier;
+                satelliteImages.push(new satelliteImage(coords, url, id));
+                $("#images").append($("<div>", { id: id }).append(
+                    $("<img>", { src: url, class: "sat-img" })));
             })
         },
         error: function(data){
@@ -156,7 +158,7 @@ var nite = {
             center: this.getShadowPosition(),
             radius: this.getShadowRadiusFromAngle(6),
             fillColor: "#000",
-            fillOpacity: 0.2,
+            fillOpacity: 0.3,
             strokeOpacity: 0,
             clickable: false,
             editable: false
@@ -166,7 +168,7 @@ var nite = {
             center: this.getShadowPosition(),
             radius: this.getShadowRadiusFromAngle(12),
             fillColor: "#000",
-            fillOpacity: 0.2,
+            fillOpacity: 0.3,
             strokeOpacity: 0,
             clickable: false,
             editable: false

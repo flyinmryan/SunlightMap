@@ -1,4 +1,6 @@
-﻿This map uses a mix a several APIs to create an interactive Sunlight Map
+﻿Sunlight Map
+
+This map uses a mix a several APIs to create an interactive Sunlight Map
 
 Credit for the night shading goes to https://github.com/rossengeorgiev/nite-overlay
 
