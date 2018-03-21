@@ -65,7 +65,7 @@ function initMap() {
                 var imgTag = "";
                 satelliteImages.forEach(function(img){
                     if (img.coords.lon > lowerLimit && img.coords.lon < upperLimit) {
-                        imgTag = "<span onclick='window.open(\"" + img.url + "\")'><img class='sat-img' src='" + img.url + "'></span>";
+                        imgTag = "<a href='" + img.url + "' data-lightbox='image'><img class='sat-img' src='" + img.url + "'></a>";
                     }
                 })
                 var infowindow = new google.maps.InfoWindow({
