@@ -60,26 +60,45 @@ function initMap() {
                     position: { lat: latitutde, lng: longitude },
                     map: map
                 });
-                var upperLimit = longitude + 14;
-                var lowerLimit = longitude - 14;
-                var imgTag = "";
-                satelliteImages.forEach(function(img){
-                    if (img.coords.lon > lowerLimit && img.coords.lon < upperLimit) {
-                        imgTag = "<a href='" + $("#" + img.id + " img").attr("src") + "' data-lightbox='image'>" + $("#" + img.id).html() + "</a>";
+                $.get({
+                    url: "https://epic.gsfc.nasa.gov/api/natural?api_key=ICpor4lpkRKy36vouzXvpEO6ODsx6ZqoMYkF5CXl",
+                    success: function (images) {
+                        images.forEach(function (img) {
+                            var dateTime = img.date.split(" ");
+                            var date = dateTime[0].split("-");
+                            var url = "https://epic.gsfc.nasa.gov/archive/natural/" + date[0] + "/" + date[1] + "/" + date[2] + "/png/" + img.image + ".png";
+                            var coords = img.centroid_coordinates;
+                            var id = img.identifier;
+                            satelliteImages.push(new satelliteImage(coords, url, id));
+                            $("#images").append($("<div>", { id: id }).append(
+                                $("<img>", { src: url, class: "sat-img" })));
+                            var upperLimit = longitude + 14;
+                            var lowerLimit = longitude - 14;
+                            var imgTag = "";
+                            satelliteImages.forEach(function (img) {
+                                if (img.coords.lon > lowerLimit && img.coords.lon < upperLimit) {
+                                    imgTag = "<a href='" + $("#" + img.id + " img").attr("src") + "' data-lightbox='image'>" + $("#" + img.id).html() + "</a>";
+                                }
+                            })
+                            var infowindow = new google.maps.InfoWindow({
+                                pixelOffset: new google.maps.Size(0, 220),
+                                content: "<h1>" + location.name + ", " + countries[location.sys.country] + "</h1>" +
+                                    "<img src='http://www.openweathermap.org/img/w/" + location.weather[0].icon + ".png' />" +
+                                    "<p>" + location.main.temp + "&deg;</p>" +
+                                    "<p>" + location.weather[0].description + "</p>" +
+                                    imgTag
+                            });
+                            infowindow.open(map, marker);
+                            google.maps.event.addListener(infowindow, 'closeclick', function () {
+                                marker.setMap(null);
+                            });
+                        })
+                    },
+                    error: function (data) {
+                        console.log(data);
                     }
                 })
-                var infowindow = new google.maps.InfoWindow({
-                    pixelOffset: new google.maps.Size(0, 220),
-                    content: "<h1>" + location.name + ", " + countries[location.sys.country] + "</h1>" +
-                                "<img src='http://www.openweathermap.org/img/w/" + location.weather[0].icon + ".png' />" +
-                                "<p>" + location.main.temp + "&deg;</p>" +
-                                // "<p>" + location.weather[0].description + "</p>" +
-                                imgTag
-                });
-                infowindow.open(map, marker);
-                google.maps.event.addListener(infowindow,'closeclick',function(){
-                    marker.setMap(null);
-                });
+                
             },
             error: function(error){
                 console.log(error);
@@ -87,24 +106,7 @@ function initMap() {
         })
     });
 
-    $.get({
-        url: "https://epic.gsfc.nasa.gov/api/natural?api_key=ICpor4lpkRKy36vouzXvpEO6ODsx6ZqoMYkF5CXl",
-        success: function(images){
-            images.forEach(function(img){
-                var dateTime = img.date.split(" ");
-                var date = dateTime[0].split("-");
-                var url = "https://epic.gsfc.nasa.gov/archive/natural/" + date[0] + "/" + date[1] + "/" + date[2] + "/png/" + img.image + ".png";
-                var coords = img.centroid_coordinates;
-                var id = img.identifier;
-                satelliteImages.push(new satelliteImage(coords, url, id));
-                $("#images").append($("<div>", { id: id }).append(
-                    $("<img>", { src: url, class: "sat-img" })));
-            })
-        },
-        error: function(data){
-            console.log(data);
-        }
-    })
+
 
     cities.forEach(function(city){
         $.get({
