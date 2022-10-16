@@ -50,7 +50,7 @@ function initMap() {
     map.addListener('click', function(event) {
         latitutde = event.latLng.lat();
         longitude = event.latLng.lng();
-        var apiUrl = "http://api.openweathermap.org/data/2.5/weather?lat=" + latitutde + "&lon=" + longitude + "&units=imperial&APPID=ca6715e3bc0a5934ba9c218476a1374f";
+        var apiUrl = "//api.openweathermap.org/data/2.5/weather?lat=" + latitutde + "&lon=" + longitude + "&units=imperial&APPID=ca6715e3bc0a5934ba9c218476a1374f";
         if (marker != null) marker.setMap(null);
 
         $.get({
@@ -110,7 +110,7 @@ function initMap() {
 
     cities.forEach(function(city){
         $.get({
-            url: "http://api.openweathermap.org/data/2.5/weather?lat=" + city.lat + "&lon=" + city.long + "&units=imperial&APPID=ca6715e3bc0a5934ba9c218476a1374f",
+            url: "//api.openweathermap.org/data/2.5/weather?lat=" + city.lat + "&lon=" + city.long + "&units=imperial&APPID=ca6715e3bc0a5934ba9c218476a1374f",
             success: function(location){
                 // console.log(location);
                 marker = new google.maps.Marker({
