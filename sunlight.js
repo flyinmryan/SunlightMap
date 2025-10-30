@@ -94,15 +94,11 @@ function initMap() {
                             });
                         })
                     },
-                    error: function (data) {
-                        console.log(data);
-                    }
+                    error: function (data) { console.log(data); }
                 })
                 
             },
-            error: function(error){
-                console.log(error);
-            }
+            error: function(error){ console.log(error); }
         })
     });
 
