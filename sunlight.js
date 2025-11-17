@@ -81,7 +81,6 @@ function initMap() {
                                 }
                             })
                             var infowindow = new google.maps.InfoWindow({
-                                pixelOffset: new google.maps.Size(0, 220),
                                 content: "<h1>" + location.name + ", " + countries[location.sys.country] + "</h1>" +
                                     "<img src='http://www.openweathermap.org/img/w/" + location.weather[0].icon + ".png' />" +
                                     "<p>" + location.main.temp + "&deg;</p>" +
